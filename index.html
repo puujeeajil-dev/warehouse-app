@@ -164,7 +164,6 @@ tr:hover td{background:var(--hover);}
   <div class="auth-box">
     <h2>🏪 Агуулахын Систем</h2>
     <p>Хувцасны дэлгүүрийн удирдлага v5</p>
-    <div class="fg"><label>Дэлгүүр</label><select id="authStore"></select></div>
     <div class="fg"><label>Нэвтрэх нэр</label><input id="authUser" placeholder="username"></div>
     <div class="fg"><label>Нууц үг</label><input type="password" id="authPass" placeholder="••••••" onkeydown="if(event.key==='Enter')login()"></div>
     <button class="btn-p" onclick="login()">Нэвтрэх</button>
@@ -654,10 +653,10 @@ function initAuthStores(){
 }
 
 async function login(){
-  const sid=document.getElementById('authStore').value;
   const un=document.getElementById('authUser').value.trim();
   const pw=document.getElementById('authPass').value;
-  const u=cache.users.find(x=>x.username===un&&x.store_id===sid&&x.password===pw);
+  const u=cache.users.find(x=>x.username===un&&x.password===pw);
+  const sid=u?u.store_id:'';
   if(!u){document.getElementById('authErr').textContent='Нэвтрэх нэр эсвэл нууц үг буруу!';return;}
   cu=u;cs=cache.stores.find(s=>s.id===sid);
   document.getElementById('authScreen').classList.remove('show');
