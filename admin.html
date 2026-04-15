@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Агуулхын Систем — Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--primary:#4f46e5;--pd:#3730a3;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+/* AUTH */
+#authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1e1b4b,#4f46e5);}
+.auth-box{background:#fff;border-radius:16px;padding:40px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.auth-box h2{text-align:center;margin-bottom:6px;color:var(--primary);}
+.auth-box p{text-align:center;color:var(--muted);margin-bottom:24px;font-size:13px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;}
+.fg input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:.2s;}
+.fg input:focus{border-color:var(--primary);}
+.btn-p{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;}
+.err{color:var(--danger);font-size:12px;text-align:center;margin-top:8px;}
+/* LAYOUT */
+#app{display:none;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:#1e1b4b;color:#fff;display:flex;flex-direction:column;z-index:100;}
+.slogo{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
+.slogo h3{font-size:15px;font-weight:700;}
+.slogo small{font-size:11px;opacity:.6;}
+.snav{flex:1;padding:10px 0;overflow-y:auto;}
+.ni{display:flex;align-items:center;gap:9px;padding:10px 16px;cursor:pointer;font-size:13px;opacity:.75;transition:.15s;}
+.ni:hover,.ni.active{background:rgba(255,255,255,.15);opacity:1;}
+.sfooter{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);}
+.lbtn{padding:7px 12px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;width:100%;}
+.main{margin-left:220px;padding:24px;min-height:100vh;}
+.page{display:none;}
+.page.active{display:block;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.pt{font-size:20px;font-weight:700;}
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+.sc{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.sc .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;}
+.sc .val{font-size:26px;font-weight:700;margin-top:4px;}
+.sc.bl .val{color:var(--primary);}
+.sc.gr .val{color:var(--success);}
+.sc.or .val{color:var(--warning);}
+.sc.rd .val{color:var(--danger);}
+/* CARD */
+.card{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;margin-bottom:18px;}
+.ch{padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between;}
+.cb{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:#f8fafc;padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.bg-gr{background:#d1fae5;color:#065f46;}
+.bg-rd{background:#fee2e2;color:#991b1b;}
+.bg-or{background:#fef3c7;color:#92400e;}
+.bg-bl{background:#dbeafe;color:#1e40af;}
+.bg-pu{background:#ede9fe;color:#5b21b6;}
+/* BUTTONS */
+.bs{padding:5px 10px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.b-suc{background:var(--success);color:#fff;}
+.b-dan{background:var(--danger);color:#fff;}
+.b-war{background:var(--warning);color:#fff;}
+.b-inf{background:#3b82f6;color:#fff;}
+.b-add{background:var(--primary);color:#fff;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+.bgroup{display:flex;gap:8px;flex-wrap:wrap;}
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.mbox{background:#fff;border-radius:13px;padding:26px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.mbox h3{font-size:16px;font-weight:700;margin-bottom:16px;}
+.mbtns{display:flex;gap:8px;margin-top:16px;}
+.mbtns button{flex:1;}
+.bcancel{background:var(--border);color:var(--text);padding:10px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{color:var(--muted);font-weight:600;}
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.filters input,.filters select{padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;outline:none;}
+/* SYNC */
+.sync{position:fixed;bottom:16px;right:16px;background:var(--success);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;display:none;z-index:999;}
+.sync.err{background:var(--danger);}
+/* MOBILE */
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;padding:14px;}}
+.empty{text-align:center;padding:30px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="sync" id="sync"></div>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <h2>🔐 Admin Panel</h2>
+    <p>Агуулхын Систем — Ерөнхий удирдлага</p>
+    <div class="fg"><label>Нэвтрэх нэр</label><input id="aUser" placeholder="superadmin" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <div class="fg"><label>Нууц үг</label><input type="password" id="aPass" placeholder="••••••" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <button class="btn-p" onclick="adminLogin()">Нэвтрэх</button>
+    <div class="err" id="aErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="slogo">
+      <h3>⚙️ Admin Panel</h3>
+      <small>Агуулхын Систем</small>
+    </div>
+    <nav class="snav">
+      <div class="ni active" onclick="showPage('dashboard',this)">📊 Хяналтын самбар</div>
+      <div class="ni" onclick="showPage('requests',this)">📋 Бүртгэлийн хүсэлтүүд</div>
+      <div class="ni" onclick="showPage('stores',this)">🏪 Дэлгүүрүүд</div>
+      <div class="ni" onclick="showPage('payments',this)">💰 Төлбөрийн хяналт</div>
+      <div class="ni" onclick="showPage('users',this)">👤 Хэрэглэгчид</div>
+    </nav>
+    <div class="sfooter">
+      <button class="lbtn" onclick="adminLogout()">🚪 Гарах</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="ph"><div class="pt">📊 Хяналтын самбар</div>
+        <button class="b-add" onclick="loadAll()">🔄 Шинэчлэх</button>
+      </div>
+      <div class="sg" id="dashStats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
+        <div class="card">
+          <div class="ch">📋 Шинэ хүсэлтүүд</div>
+          <div style="padding:0 16px;" id="newRequests"></div>
+        </div>
+        <div class="card">
+          <div class="ch">💰 Сарын орлого</div>
+          <div style="padding:14px;" id="monthlyIncome"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">🏪 Идэвхтэй дэлгүүрүүд</div>
+        <div class="cb"><table><thead><tr><th>Дэлгүүр</th><th>Эзэн</th><th>Багц</th><th>Төлбөр</th><th>Үйлдэл</th></tr></thead>
+        <tbody id="activeStoresTbl"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- REQUESTS -->
+    <div class="page" id="page-requests">
+      <div class="ph"><div class="pt">📋 Бүртгэлийн хүсэлтүүд</div>
+        <button class="b-add" onclick="loadRequests()">🔄 Шинэчлэх</button>
+      </div>
+      <div class="filters">
+        <select id="reqFilter" onchange="loadRequests()">
+          <option value="">Бүх хүсэлт</option>
+          <option value="pending">Хүлээгдэж буй</option>
+          <option value="approved">Зөвшөөрсөн</option>
+          <option value="rejected">Татгалзсан</option>
+        </select>
+      </div>
+      <div class="card"><div class="cb">
+        <table><thead><tr><th>Огноо</th><th>Дэлгүүр</th><th>Эзэн</th><th>Имэйл</th><th>Утас</th><th>Багц</th><th>Үнэ</th><th>Статус</th><th>Үйлдэл</th></tr></thead>
+        <tbody id="requestsTbl"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- STORES -->
+    <div class="page" id="page-stores">
+      <div class="ph"><div class="pt">🏪 Дэлгүүрүүд</div>
+        <button class="b-add" onclick="loadStores()">🔄 Шинэчлэх</button>
+      </div>
+      <div class="card"><div class="cb">
+        <table><thead><tr><th>Дэлгүүр</th><th>Хаяг</th><th>Хэрэглэгч</th><th>Бараа</th><th>Сүүлийн гүйлгээ</th><th>Статус</th><th>Үйлдэл</th></tr></thead>
+        <tbody id="storesTbl"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="ph"><div class="pt">💰 Төлбөрийн хяналт</div>
+        <button class="b-add" onclick="openAddPayment()">+ Төлбөр бүртгэх</button>
+      </div>
+      <div class="sg" id="payStats"></div>
+      <div class="card"><div class="cb">
+        <table><thead><tr><th>Дэлгүүр</th><th>Багц</th><th>Сарын төлбөр</th><th>Сүүлд төлсөн</th><th>Дараагийн төлбөр</th><th>Статус</th><th>Үйлдэл</th></tr></thead>
+        <tbody id="paymentsTbl"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="ph"><div class="pt">👤 Хэрэглэгчид</div></div>
+      <div class="card"><div class="cb">
+        <table><thead><tr><th>Нэвтрэх нэр</th><th>Дэлгүүр</th><th>Эрх</th><th>Нийт гүйлгээ</th><th>Үйлдэл</th></tr></thead>
+        <tbody id="usersTbl"></tbody></table>
+      </div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="mReq">
+<div class="mbox">
+  <h3 id="mReqTitle">Хүсэлтийн дэлгэрэнгүй</h3>
+  <div id="mReqBody"></div>
+  <div class="mbtns" id="mReqBtns"></div>
+</div></div>
+
+<div class="mo" id="mPay">
+<div class="mbox">
+  <h3>💰 Төлбөр бүртгэх</h3>
+  <div class="fg"><label>Дэлгүүр</label><select id="payStore" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;"></select></div>
+  <div class="fg"><label>Дүн ₮</label><input id="payAmt" type="number" placeholder="0" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;"></div>
+  <div class="fg"><label>Огноо</label><input id="payDate" type="date" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;"></div>
+  <div class="fg"><label>Арга</label>
+    <select id="payMethod" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;">
+      <option>QPay</option><option>Бэлэн мөнгө</option><option>Банк шилжүүлэг</option>
+    </select>
+  </div>
+  <div class="mbtns">
+    <button class="bcancel" onclick="closeM('mPay')">Болих</button>
+    <button class="b-add" onclick="savePayment()">Хадгалах</button>
+  </div>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+var SURL='https://ucesnnzhpealozxzjsrc.supabase.co';
+var SKEY='sb_publishable_4yt_ZW-Ow8VEZiKnGR3BQg_q440mdY0';
+var sb=window.supabase.createClient(SURL,SKEY);
+
+var ADMIN_USER='superadmin';
+var ADMIN_PASS='super@admin2024!';
+
+function fmt(n){return Number(n||0).toLocaleString()+'₮';}
+function today(){return new Date().toISOString().split('T')[0];}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
+
+function showSync(msg,err){
+  var el=document.getElementById('sync');
+  el.textContent=msg;el.className='sync'+(err?' err':'');
+  el.style.display='block';
+  setTimeout(function(){el.style.display='none';},2500);
+}
+
+// ===== AUTH =====
+function adminLogin(){
+  var u=document.getElementById('aUser').value.trim();
+  var p=document.getElementById('aPass').value;
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    sessionStorage.setItem('admin_logged','1');
+    document.getElementById('authScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    loadAll();
+  }else{
+    document.getElementById('aErr').textContent='Нэвтрэх нэр эсвэл нууц үг буруу!';
+  }
+}
+function adminLogout(){
+  sessionStorage.removeItem('admin_logged');
+  document.getElementById('app').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+}
+// Auto login check
+if(sessionStorage.getItem('admin_logged')==='1'){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  loadAll();
+}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  var map={dashboard:loadDash,requests:loadRequests,stores:loadStores,payments:loadPayments,users:loadUsers};
+  if(map[id])map[id]();
+}
+
+// ===== LOAD ALL =====
+async function loadAll(){
+  loadDash();
+}
+
+// ===== DASHBOARD =====
+async function loadDash(){
+  var stores=await sb.from('stores').select('*');
+  var requests=await sb.from('store_requests').select('*');
+  var payments=await sb.from('payments').select('*');
+  var users=await sb.from('users').select('*');
+
+  var stData=stores.data||[];
+  var rqData=requests.data||[];
+  var pyData=payments.data||[];
+  var usData=users.data||[];
+
+  var pending=rqData.filter(function(r){return r.status==='pending';}).length;
+  var approved=rqData.filter(function(r){return r.status==='approved';}).length;
+  var monthPay=pyData.filter(function(p){return p.paid_at&&p.paid_at.substr(0,7)===today().substr(0,7);}).reduce(function(a,p){return a+(+p.amount||0);},0);
+
+  document.getElementById('dashStats').innerHTML=
+    '<div class="sc bl"><div class="lbl">Нийт дэлгүүр</div><div class="val">'+stData.length+'</div></div>'+
+    '<div class="sc or"><div class="lbl">Хүлээгдэж буй хүсэлт</div><div class="val">'+pending+'</div></div>'+
+    '<div class="sc gr"><div class="lbl">Зөвшөөрсөн дэлгүүр</div><div class="val">'+approved+'</div></div>'+
+    '<div class="sc gr"><div class="lbl">Сарын орлого</div><div class="val">'+fmt(monthPay)+'</div></div>'+
+    '<div class="sc bl"><div class="lbl">Нийт хэрэглэгч</div><div class="val">'+usData.length+'</div></div>';
+
+  // New requests
+  var newReqs=rqData.filter(function(r){return r.status==='pending';}).slice(0,5);
+  document.getElementById('newRequests').innerHTML=newReqs.length?
+    newReqs.map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+r.store_name+'</strong><br><small style="color:#64748b;">'+r.owner_name+' • '+r.email+'</small><br><div style="margin-top:6px;display:flex;gap:6px;"><button class="bs b-suc" onclick="approveReq(\''+r.id+'\')">✅ Зөвшөөрөх</button><button class="bs b-dan" onclick="rejectReq(\''+r.id+'\')">❌ Татгалзах</button></div></div>';}).join(''):
+    '<div class="empty">Шинэ хүсэлт байхгүй</div>';
+
+  // Monthly income
+  var plans={basic:50000,standard:75000,premium:100000};
+  var totalMonthly=rqData.filter(function(r){return r.status==='approved';}).reduce(function(a,r){return a+(+r.monthly_fee||0);},0);
+  document.getElementById('monthlyIncome').innerHTML=
+    '<div style="font-size:28px;font-weight:700;color:#10b981;margin-bottom:8px;">'+fmt(totalMonthly)+'</div>'+
+    '<div style="font-size:13px;color:#64748b;">Нийт '+rqData.filter(function(r){return r.status==='approved';}).length+' идэвхтэй дэлгүүр</div>'+
+    '<div style="margin-top:12px;font-size:12px;color:#64748b;">Энэ сар цуглуулсан: <strong style="color:#4f46e5;">'+fmt(monthPay)+'</strong></div>';
+
+  // Active stores
+  document.getElementById('activeStoresTbl').innerHTML=stData.length?
+    stData.map(function(s){
+      var req=rqData.find(function(r){return r.store_name===s.name;});
+      return '<tr><td><strong>'+s.name+'</strong></td><td>'+(s.address||'-')+'</td>'+
+        '<td><span class="badge bg-bl">'+(req?req.plan||'basic':'basic')+'</span></td>'+
+        '<td><strong style="color:#10b981;">'+(req?fmt(req.monthly_fee||50000):'-')+'</strong></td>'+
+        '<td><button class="bs b-inf" onclick="viewStore(\''+s.id+'\')">👁️ Харах</button></td></tr>';
+    }).join(''):
+    '<tr><td colspan="5" class="empty">Дэлгүүр байхгүй</td></tr>';
+}
+
+// ===== REQUESTS =====
+async function loadRequests(){
+  var filter=document.getElementById('reqFilter').value;
+  var q=sb.from('store_requests').select('*').order('created_at',{ascending:false});
+  if(filter)q=q.eq('status',filter);
+  var res=await q;
+  var data=res.data||[];
+
+  var statusBadge=function(s){
+    var map={pending:'bg-or',approved:'bg-gr',rejected:'bg-rd'};
+    var lb={pending:'Хүлээгдэж буй',approved:'Зөвшөөрсөн',rejected:'Татгалзсан'};
+    return '<span class="badge '+(map[s]||'bg-bl')+'">'+(lb[s]||s)+'</span>';
+  };
+
+  document.getElementById('requestsTbl').innerHTML=data.length?
+    data.map(function(r){
+      var planLabel={basic:'🥉 Жижиг',standard:'🥈 Дунд',premium:'🥇 Том'};
+      return '<tr>'+
+        '<td>'+new Date(r.created_at).toLocaleDateString('mn-MN')+'</td>'+
+        '<td><strong>'+r.store_name+'</strong></td>'+
+        '<td>'+r.owner_name+'</td>'+
+        '<td>'+r.email+'</td>'+
+        '<td>'+(r.phone||'-')+'</td>'+
+        '<td><span class="badge bg-pu">'+(planLabel[r.plan]||r.plan||'-')+'</span></td>'+
+        '<td><strong>'+fmt(r.monthly_fee)+'</strong></td>'+
+        '<td>'+statusBadge(r.status)+'</td>'+
+        '<td><div class="bgroup">'+
+          (r.status==='pending'?'<button class="bs b-suc" onclick="approveReq(\''+r.id+'\')">✅</button><button class="bs b-dan" onclick="rejectReq(\''+r.id+'\')">❌</button>':'')+
+          '<button class="bs b-inf" onclick="viewReq(\''+r.id+'\')">👁️</button>'+
+        '</div></td>'+
+      '</tr>';
+    }).join(''):
+    '<tr><td colspan="9" class="empty">Хүсэлт байхгүй</td></tr>';
+}
+
+async function approveReq(id){
+  if(!confirm('Энэ дэлгүүрийг зөвшөөрөх үү?'))return;
+  var res=await sb.from('store_requests').select('*').eq('id',id).single();
+  var r=res.data;
+  if(!r)return;
+
+  // Дэлгүүр үүсгэх
+  var storeId=uid();
+  await sb.from('stores').insert({id:storeId,name:r.store_name,address:r.address||'',email:r.email});
+
+  // Хэрэглэгч үүсгэх
+  await sb.from('users').insert({id:uid(),username:r.username,password:r.password,role:'owner',store_id:storeId,email:r.email});
+
+  // Хүсэлтийн статус шинэчлэх
+  await sb.from('store_requests').update({status:'approved'}).eq('id',id);
+
+  showSync('✅ Дэлгүүр амжилттай зөвшөөрөгдлөө!');
+  loadRequests();loadDash();
+}
+
+async function rejectReq(id){
+  if(!confirm('Энэ хүсэлтийг татгалзах уу?'))return;
+  await sb.from('store_requests').update({status:'rejected'}).eq('id',id);
+  showSync('❌ Хүсэлт татгалзагдлаа.');
+  loadRequests();
+}
+
+function viewReq(id){
+  sb.from('store_requests').select('*').eq('id',id).single().then(function(res){
+    var r=res.data;if(!r)return;
+    var planLabel={basic:'🥉 Жижиг (50,000₮)',standard:'🥈 Дунд (75,000₮)',premium:'🥇 Том (100,000₮)'};
+    document.getElementById('mReqTitle').textContent='📋 '+r.store_name;
+    document.getElementById('mReqBody').innerHTML=
+      '<div class="info-row"><span class="info-label">Дэлгүүрийн нэр</span><span>'+r.store_name+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Эзний нэр</span><span>'+r.owner_name+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Gmail</span><span>'+r.email+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Утас</span><span>'+(r.phone||'-')+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Хаяг</span><span>'+(r.address||'-')+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Нэвтрэх нэр</span><span>'+r.username+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Багц</span><span>'+(planLabel[r.plan]||r.plan)+'</span></div>'+
+      '<div class="info-row"><span class="info-label">Бүртгүүлсэн</span><span>'+new Date(r.created_at).toLocaleString('mn-MN')+'</span></div>';
+    document.getElementById('mReqBtns').innerHTML=
+      r.status==='pending'?
+      '<button class="bcancel" onclick="closeM(\'mReq\')">Хаах</button>'+
+      '<button class="b-add" style="background:#10b981;" onclick="approveReq(\''+r.id+'\');closeM(\'mReq\')">✅ Зөвшөөрөх</button>'+
+      '<button class="b-add" style="background:#ef4444;flex:0.5;" onclick="rejectReq(\''+r.id+'\');closeM(\'mReq\')">❌</button>':
+      '<button class="b-add" onclick="closeM(\'mReq\')">Хаах</button>';
+    openM('mReq');
+  });
+}
+
+// ===== STORES =====
+async function loadStores(){
+  var s=await sb.from('stores').select('*');
+  var u=await sb.from('users').select('*');
+  var p=await sb.from('products').select('id,store_id');
+  var t=await sb.from('transactions').select('id,store_id,created_at').order('created_at',{ascending:false});
+
+  var stData=s.data||[];
+  var uData=u.data||[];
+  var pData=p.data||[];
+  var tData=t.data||[];
+
+  document.getElementById('storesTbl').innerHTML=stData.length?
+    stData.map(function(store){
+      var uCount=uData.filter(function(u){return u.store_id===store.id;}).length;
+      var pCount=pData.filter(function(p){return p.store_id===store.id;}).length;
+      var lastTx=tData.find(function(t){return t.store_id===store.id;});
+      return '<tr>'+
+        '<td><strong>'+store.name+'</strong></td>'+
+        '<td>'+(store.address||'-')+'</td>'+
+        '<td>'+uCount+'</td>'+
+        '<td>'+pCount+'</td>'+
+        '<td>'+(lastTx?new Date(lastTx.created_at).toLocaleDateString('mn-MN'):'-')+'</td>'+
+        '<td><span class="badge bg-gr">Идэвхтэй</span></td>'+
+        '<td><button class="bs b-dan" onclick="deleteStore(\''+store.id+'\')">🗑️</button></td>'+
+      '</tr>';
+    }).join(''):
+    '<tr><td colspan="7" class="empty">Дэлгүүр байхгүй</td></tr>';
+}
+
+async function deleteStore(id){
+  if(!confirm('Дэлгүүрийг устгах уу? Бүх өгөгдөл устна!'))return;
+  await sb.from('stores').delete().eq('id',id);
+  showSync('✅ Дэлгүүр устгагдлаа!');
+  loadStores();
+}
+
+function viewStore(id){
+  showPage('stores',document.querySelectorAll('.ni')[2]);
+}
+
+// ===== PAYMENTS =====
+async function loadPayments(){
+  var s=await sb.from('stores').select('*');
+  var r=await sb.from('store_requests').select('*').eq('status','approved');
+  var p=await sb.from('payments').select('*').order('created_at',{ascending:false});
+
+  var stData=s.data||[];
+  var rqData=r.data||[];
+  var pyData=p.data||[];
+
+  var totalMonthly=rqData.reduce(function(a,r){return a+(+r.monthly_fee||0);},0);
+  var thisMonth=pyData.filter(function(p){return p.paid_at&&p.paid_at.substr(0,7)===today().substr(0,7);}).reduce(function(a,p){return a+(+p.amount||0);},0);
+  var unpaid=totalMonthly-thisMonth;
+
+  document.getElementById('payStats').innerHTML=
+    '<div class="sc gr"><div class="lbl">Сарын нийт орлого</div><div class="val">'+fmt(totalMonthly)+'</div></div>'+
+    '<div class="sc gr"><div class="lbl">Энэ сар цуглуулсан</div><div class="val">'+fmt(thisMonth)+'</div></div>'+
+    '<div class="sc rd"><div class="lbl">Төлөгдөөгүй</div><div class="val">'+fmt(unpaid)+'</div></div>'+
+    '<div class="sc bl"><div class="lbl">Идэвхтэй дэлгүүр</div><div class="val">'+rqData.length+'</div></div>';
+
+  document.getElementById('paymentsTbl').innerHTML=rqData.length?
+    rqData.map(function(req){
+      var lastPay=pyData.find(function(p){return p.store_id===stData.find(function(s){return s.name===req.store_name;})?.id;});
+      var planLabel={basic:'🥉 Жижиг',standard:'🥈 Дунд',premium:'🥇 Том'};
+      var isPaid=lastPay&&lastPay.paid_at&&lastPay.paid_at.substr(0,7)===today().substr(0,7);
+      return '<tr>'+
+        '<td><strong>'+req.store_name+'</strong></td>'+
+        '<td><span class="badge bg-pu">'+(planLabel[req.plan]||req.plan)+'</span></td>'+
+        '<td><strong>'+fmt(req.monthly_fee)+'</strong>/сар</td>'+
+        '<td>'+(lastPay?new Date(lastPay.paid_at).toLocaleDateString('mn-MN'):'-')+'</td>'+
+        '<td>-</td>'+
+        '<td><span class="badge '+(isPaid?'bg-gr':'bg-rd')+'">'+(isPaid?'✅ Төлсөн':'❌ Төлөөгүй')+'</span></td>'+
+        '<td><button class="bs b-suc" onclick="openAddPayment()">+ Төлбөр</button></td>'+
+      '</tr>';
+    }).join(''):
+    '<tr><td colspan="7" class="empty">Идэвхтэй дэлгүүр байхгүй</td></tr>';
+}
+
+function openAddPayment(){
+  sb.from('stores').select('*').then(function(res){
+    var stores=res.data||[];
+    document.getElementById('payStore').innerHTML=stores.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+    document.getElementById('payAmt').value='';
+    document.getElementById('payDate').value=today();
+    openM('mPay');
+  });
+}
+
+async function savePayment(){
+  var storeId=document.getElementById('payStore').value;
+  var amt=+document.getElementById('payAmt').value;
+  var date=document.getElementById('payDate').value;
+  var method=document.getElementById('payMethod').value;
+  if(!amt){alert('Дүнг оруулна уу!');return;}
+  await sb.from('payments').insert({id:uid(),store_id:storeId,amount:amt,method:method,status:'paid',paid_at:date});
+  showSync('✅ Төлбөр бүртгэгдлээ!');
+  closeM('mPay');loadPayments();
+}
+
+// ===== USERS =====
+async function loadUsers(){
+  var u=await sb.from('users').select('*');
+  var t=await sb.from('transactions').select('username,store_id');
+  var s=await sb.from('stores').select('*');
+
+  var uData=u.data||[];
+  var tData=t.data||[];
+  var sData=s.data||[];
+  var RL={owner:'Эзэн',accountant:'Нягтлан',seller:'Худалдагч'};
+
+  document.getElementById('usersTbl').innerHTML=uData.length?
+    uData.map(function(u){
+      var store=sData.find(function(s){return s.id===u.store_id;});
+      var txCount=tData.filter(function(t){return t.username===u.username;}).length;
+      return '<tr>'+
+        '<td><strong>'+u.username+'</strong></td>'+
+        '<td>'+(store?store.name:'-')+'</td>'+
+        '<td><span class="badge '+(u.role==='owner'?'bg-or':u.role==='accountant'?'bg-gr':'bg-bl')+'">'+(RL[u.role]||u.role)+'</span></td>'+
+        '<td>'+txCount+'</td>'+
+        '<td><button class="bs b-dan" onclick="deleteUser(\''+u.id+'\')">🗑️</button></td>'+
+      '</tr>';
+    }).join(''):
+    '<tr><td colspan="5" class="empty">Хэрэглэгч байхгүй</td></tr>';
+}
+
+async function deleteUser(id){
+  if(!confirm('Устгах уу?'))return;
+  await sb.from('users').delete().eq('id',id);
+  showSync('✅ Устгагдлаа!');loadUsers();
+}
+
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.mo').forEach(function(m){m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
+</script>
+</body>
+</html>
