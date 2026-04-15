@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Агуулхын Систем — Бүртгүүлэх</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.3/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;min-height:100vh;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -12,27 +11,26 @@ body{font-family:'Segoe UI',sans-serif;min-height:100vh;background:linear-gradie
 .logo{text-align:center;margin-bottom:8px;font-size:28px;}
 h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
 .sub{text-align:center;color:#64748b;font-size:13px;margin-bottom:28px;}
-.steps{display:flex;justify-content:center;gap:8px;margin-bottom:28px;}
+.steps{display:flex;justify-content:center;gap:8px;margin-bottom:28px;align-items:center;}
 .step{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:.3s;}
 .step.active{background:#4f46e5;color:#fff;}
 .step.done{background:#10b981;color:#fff;}
 .step.inactive{background:#e2e8f0;color:#94a3b8;}
-.step-line{width:40px;height:2px;background:#e2e8f0;align-self:center;}
+.step-line{width:40px;height:2px;background:#e2e8f0;}
 .step-line.done{background:#10b981;}
 .section{display:none;}
 .section.active{display:block;}
 .fg{margin-bottom:16px;}
 .fg label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:6px;text-transform:uppercase;}
-.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:14px;outline:none;transition:.2s;font-family:inherit;}
+.fg input,.fg select{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:14px;outline:none;transition:.2s;font-family:inherit;}
 .fg input:focus,.fg select:focus{border-color:#4f46e5;}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;}
-.btn-primary{background:#4f46e5;color:#fff;}
+.btn-primary{background:#4f46e5;color:#fff;margin-bottom:10px;}
 .btn-primary:hover{background:#3730a3;}
-.btn-secondary{background:#f1f5f9;color:#1e293b;margin-top:10px;}
+.btn-secondary{background:#f1f5f9;color:#1e293b;}
 .btn-secondary:hover{background:#e2e8f0;}
-.err{color:#ef4444;font-size:12px;text-align:center;margin-top:8px;}
-.suc{color:#10b981;font-size:13px;text-align:center;margin-top:8px;font-weight:600;}
+.err{color:#ef4444;font-size:12px;text-align:center;margin-top:8px;min-height:20px;}
 .price-card{border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;cursor:pointer;transition:.2s;}
 .price-card:hover,.price-card.selected{border-color:#4f46e5;background:#f5f3ff;}
 .price-card .name{font-weight:700;font-size:15px;}
@@ -40,13 +38,15 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
 .price-card .desc{color:#64748b;font-size:12px;margin-top:4px;}
 .check{display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;margin-top:6px;}
 .check::before{content:"✅";}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#d1fae5;color:#065f46;margin-left:8px;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:44px;width:100%;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:0;}
 .success-box{text-align:center;padding:20px 0;}
 .success-box .icon{font-size:60px;margin-bottom:16px;}
 .success-box h3{font-size:20px;font-weight:700;color:#1e293b;margin-bottom:8px;}
 .success-box p{color:#64748b;font-size:14px;line-height:1.6;}
 .login-link{display:block;text-align:center;margin-top:20px;color:#4f46e5;font-size:13px;font-weight:600;text-decoration:none;}
-.login-link:hover{text-decoration:underline;}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#d1fae5;color:#065f46;margin-left:8px;}
 </style>
 </head>
 <body>
@@ -55,7 +55,6 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
   <h2>Агуулхын Систем</h2>
   <p class="sub">Дэлгүүрийн агуулахын удирдлагын систем</p>
 
-  <!-- STEPS -->
   <div class="steps">
     <div class="step active" id="s1">1</div>
     <div class="step-line" id="l1"></div>
@@ -66,29 +65,16 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
     <div class="step inactive" id="s4">4</div>
   </div>
 
-  <!-- SECTION 1: Дэлгүүрийн мэдээлэл -->
+  <!-- SECTION 1 -->
   <div class="section active" id="sec1">
     <h3 style="font-size:16px;margin-bottom:16px;color:#1e293b;">📋 Дэлгүүрийн мэдээлэл</h3>
-    <div class="fg">
-      <label>Дэлгүүрийн нэр *</label>
-      <input id="storeName" placeholder="Жишээ: Мөнхийн дэлгүүр">
-    </div>
+    <div class="fg"><label>Дэлгүүрийн нэр *</label><input id="storeName" placeholder="Жишээ: Мөнхийн дэлгүүр"></div>
     <div class="fr">
-      <div class="fg">
-        <label>Эзний нэр *</label>
-        <input id="ownerName" placeholder="Таны нэр">
-      </div>
-      <div class="fg">
-        <label>Утасны дугаар *</label>
-        <input id="phone" placeholder="9999-9999">
-      </div>
+      <div class="fg"><label>Эзний нэр *</label><input id="ownerName" placeholder="Таны нэр"></div>
+      <div class="fg"><label>Утасны дугаар *</label><input id="phone" placeholder="9999-9999"></div>
     </div>
-    <div class="fg">
-      <label>Хаяг</label>
-      <input id="address" placeholder="Дэлгүүрийн хаяг">
-    </div>
-    <div class="fg">
-      <label>Ангилал</label>
+    <div class="fg"><label>Хаяг</label><input id="address" placeholder="Дэлгүүрийн хаяг"></div>
+    <div class="fg"><label>Ангилал</label>
       <select id="category">
         <option value="clothes">Хувцасны дэлгүүр</option>
         <option value="food">Хүнсний дэлгүүр</option>
@@ -96,12 +82,12 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
         <option value="other">Бусад</option>
       </select>
     </div>
-    <div id="err1" class="err"></div>
+    <div class="err" id="err1"></div>
     <button class="btn btn-primary" onclick="nextStep(2)">Үргэлжлүүлэх →</button>
-    <a href="/" class="login-link">← Буцах</a>
+    <a href="/" class="login-link">← Нэвтрэх хуудас руу буцах</a>
   </div>
 
-  <!-- SECTION 2: Багц сонгох -->
+  <!-- SECTION 2 -->
   <div class="section" id="sec2">
     <h3 style="font-size:16px;margin-bottom:16px;color:#1e293b;">💰 Багц сонгох</h3>
     <div class="price-card selected" id="plan1" onclick="selectPlan('basic')">
@@ -133,141 +119,132 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
       <div class="check">Тусгай дэмжлэг</div>
       <div class="check">Тусгай тохируулга</div>
     </div>
-    <div id="err2" class="err"></div>
+    <div class="err" id="err2"></div>
     <button class="btn btn-primary" onclick="nextStep(3)">Үргэлжлүүлэх →</button>
     <button class="btn btn-secondary" onclick="nextStep(1)">← Буцах</button>
   </div>
 
-  <!-- SECTION 3: Нэвтрэх мэдээлэл -->
+  <!-- SECTION 3 -->
   <div class="section" id="sec3">
     <h3 style="font-size:16px;margin-bottom:16px;color:#1e293b;">🔐 Нэвтрэх мэдээлэл үүсгэх</h3>
-    <div class="fg">
-      <label>Gmail хаяг *</label>
-      <input id="email" type="email" placeholder="example@gmail.com">
-    </div>
-    <div class="fg">
-      <label>Нэвтрэх нэр *</label>
-      <input id="username" placeholder="Латин үсэг, тоо ашиглана уу">
-    </div>
+    <div class="fg"><label>Gmail хаяг *</label><input id="email" type="email" placeholder="example@gmail.com"></div>
+    <div class="fg"><label>Нэвтрэх нэр *</label><input id="username" placeholder="Латин үсэг, тоо ашиглана уу"></div>
     <div class="fr">
       <div class="fg">
         <label>Нууц үг *</label>
-        <div style="position:relative;">
-          <input id="password" type="password" placeholder="••••••••" style="padding-right:40px;">
-          <button type="button" onclick="togglePw('password',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;">👁️</button>
+        <div class="pw-wrap">
+          <input id="password" type="password" placeholder="••••••••">
+          <button class="pw-toggle" type="button" onclick="togglePw('password',this)">👁️</button>
         </div>
       </div>
       <div class="fg">
         <label>Нууц үг давтах *</label>
-        <div style="position:relative;">
-          <input id="password2" type="password" placeholder="••••••••" style="padding-right:40px;">
-          <button type="button" onclick="togglePw('password2',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;">👁️</button>
+        <div class="pw-wrap">
+          <input id="password2" type="password" placeholder="••••••••">
+          <button class="pw-toggle" type="button" onclick="togglePw('password2',this)">👁️</button>
         </div>
       </div>
     </div>
     <div style="background:#f0fdf4;border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:#166534;">
-      ✅ Gmail рүү баталгаажуулах имэйл илгээгдэнэ
+      ✅ Бүртгэл илгээгдсэний дараа Admin баталгаажуулна
     </div>
-    <div id="err3" class="err"></div>
+    <div class="err" id="err3"></div>
     <button class="btn btn-primary" onclick="submitRegister()">Бүртгүүлэх ✓</button>
     <button class="btn btn-secondary" onclick="nextStep(2)">← Буцах</button>
   </div>
 
-  <!-- SECTION 4: Амжилт -->
+  <!-- SECTION 4 -->
   <div class="section" id="sec4">
     <div class="success-box">
       <div class="icon">🎉</div>
       <h3>Бүртгэл амжилттай!</h3>
-      <p>Таны <strong id="sucEmail"></strong> Gmail хаяг руу баталгаажуулах имэйл илгээлээ.<br><br>
-      Имэйлээ нээгээд баталгаажуулах линк дарна уу.<br><br>
-      <strong>Дараа нь манай Admin баталгаажуулсны дараа системд нэвтэрч болно.</strong></p>
+      <p>Таны бүртгэл хүлээн авагдлаа.<br><br>
+      Манай Admin <strong>24 цагийн дотор</strong> баталгаажуулсны дараа системд нэвтэрч болно.<br><br>
+      Холбоо барих: <strong id="sucEmail"></strong></p>
       <div style="background:#fef3c7;border-radius:10px;padding:14px;margin-top:16px;font-size:13px;color:#92400e;">
-        ⏱ Баталгаажуулалт: <strong>24 цагийн дотор</strong>
+        ⏱ Баталгаажуулалт: 24 цагийн дотор
       </div>
     </div>
     <a href="/" class="login-link">← Нэвтрэх хуудас руу буцах</a>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.3/umd/supabase.min.js"></script>
 <script>
+// Supabase init - body-н эцэст ачаалагдана
 var SUPABASE_URL='https://ucesnnzhpealozxzjsrc.supabase.co';
 var SUPABASE_KEY='sb_publishable_4yt_ZW-Ow8VEZiKnGR3BQg_q440mdY0';
-var sb;
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 var selectedPlan='basic';
 var planPrices={basic:50000,standard:75000,premium:100000};
 
 function selectPlan(plan){
   selectedPlan=plan;
-  ['plan1','plan2','plan3'].forEach(id=>document.getElementById(id).classList.remove('selected'));
-  const map={basic:'plan1',standard:'plan2',premium:'plan3'};
+  document.getElementById('plan1').classList.remove('selected');
+  document.getElementById('plan2').classList.remove('selected');
+  document.getElementById('plan3').classList.remove('selected');
+  var map={basic:'plan1',standard:'plan2',premium:'plan3'};
   document.getElementById(map[plan]).classList.add('selected');
 }
 
 function nextStep(step){
-  // Validate
   if(step===2){
-    const n=document.getElementById('storeName').value.trim();
-    const o=document.getElementById('ownerName').value.trim();
-    const p=document.getElementById('phone').value.trim();
+    var n=document.getElementById('storeName').value.trim();
+    var o=document.getElementById('ownerName').value.trim();
+    var p=document.getElementById('phone').value.trim();
     if(!n||!o||!p){document.getElementById('err1').textContent='Бүх талбарыг бөглөнө үү!';return;}
     document.getElementById('err1').textContent='';
   }
-  // Update steps UI
-  for(let i=1;i<=4;i++){
-    const el=document.getElementById('s'+i);
-    const sec=document.getElementById('sec'+i);
+  for(var i=1;i<=4;i++){
+    var el=document.getElementById('s'+i);
+    var sec=document.getElementById('sec'+i);
     if(i<step){el.className='step done';el.textContent='✓';}
-    else if(i===step){el.className='step active';}
-    else{el.className='step inactive';if(!isNaN(i))el.textContent=i;}
+    else if(i===step){el.className='step active';el.textContent=i;}
+    else{el.className='step inactive';el.textContent=i;}
     if(sec)sec.className='section'+(i===step?' active':'');
-  }
-  for(let i=1;i<=3;i++){
-    const l=document.getElementById('l'+i);
+    var l=document.getElementById('l'+i);
     if(l)l.className='step-line'+(i<step?' done':'');
   }
 }
 
-window.onload=function(){
-  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-};
-
 function togglePw(id,btn){
-  const inp=document.getElementById(id);
+  var inp=document.getElementById(id);
   if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
   else{inp.type='password';btn.textContent='👁️';}
 }
 
 async function submitRegister(){
-  const email=document.getElementById('email').value.trim();
-  const username=document.getElementById('username').value.trim();
-  const pw=document.getElementById('password').value;
-  const pw2=document.getElementById('password2').value;
-  const errEl=document.getElementById('err3');
+  var email=document.getElementById('email').value.trim();
+  var username=document.getElementById('username').value.trim();
+  var pw=document.getElementById('password').value;
+  var pw2=document.getElementById('password2').value;
+  var errEl=document.getElementById('err3');
+  errEl.textContent='';
   if(!email||!username||!pw){errEl.textContent='Бүх талбарыг бөглөнө үү!';return;}
   if(!email.includes('@')){errEl.textContent='Gmail хаяг буруу байна!';return;}
   if(pw.length<6){errEl.textContent='Нууц үг хамгийн багадаа 6 тэмдэгт!';return;}
   if(pw!==pw2){errEl.textContent='Нууц үг таарахгүй байна!';return;}
-  errEl.textContent='';
-
-  // Check username duplicate
-  const{data:existing}=await sb.from('users').select('id').eq('username',username);
-  if(existing&&existing.length>0){errEl.textContent='Нэвтрэх нэр аль хэдийн бүртгэлтэй!';return;}
 
   try{
-    const{error}=await sb.from('store_requests').insert({
+    // Username давхардаж байгаа эсэх шалгах
+    var check=await sb.from('users').select('id').eq('username',username);
+    if(check.data&&check.data.length>0){errEl.textContent='Нэвтрэх нэр аль хэдийн бүртгэлтэй!';return;}
+
+    var res=await sb.from('store_requests').insert({
       store_name:document.getElementById('storeName').value.trim(),
       owner_name:document.getElementById('ownerName').value.trim(),
-      email,
+      email:email,
       phone:document.getElementById('phone').value.trim(),
       address:document.getElementById('address').value.trim(),
       plan:selectedPlan,
       monthly_fee:planPrices[selectedPlan],
-      username,
+      username:username,
       password:pw,
       status:'pending'
     });
-    if(error){errEl.textContent='Алдаа: '+error.message;return;}
+
+    if(res.error){errEl.textContent='Алдаа: '+res.error.message;return;}
     document.getElementById('sucEmail').textContent=email;
     nextStep(4);
   }catch(e){
