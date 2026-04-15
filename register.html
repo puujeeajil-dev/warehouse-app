@@ -190,12 +190,12 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
 </div>
 
 <script>
-const SUPABASE_URL='https://ucesnnzhpealozxzjsrc.supabase.co';
-const SUPABASE_KEY='sb_publishable_4yt_ZW-Ow8VEZiKnGR3BQg_q440mdY0';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var SUPABASE_URL='https://ucesnnzhpealozxzjsrc.supabase.co';
+var SUPABASE_KEY='sb_publishable_4yt_ZW-Ow8VEZiKnGR3BQg_q440mdY0';
+var sb;
 
-let selectedPlan='basic';
-let planPrices={basic:50000,standard:75000,premium:100000};
+var selectedPlan='basic';
+var planPrices={basic:50000,standard:75000,premium:100000};
 
 function selectPlan(plan){
   selectedPlan=plan;
@@ -227,6 +227,10 @@ function nextStep(step){
     if(l)l.className='step-line'+(i<step?' done':'');
   }
 }
+
+window.onload=function(){
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+};
 
 function togglePw(id,btn){
   const inp=document.getElementById(id);
