@@ -169,12 +169,11 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.3/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// Supabase init - body-н эцэст ачаалагдана
 var SUPABASE_URL='https://ucesnnzhpealozxzjsrc.supabase.co';
 var SUPABASE_KEY='sb_publishable_4yt_ZW-Ow8VEZiKnGR3BQg_q440mdY0';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 var selectedPlan='basic';
 var planPrices={basic:50000,standard:75000,premium:100000};
