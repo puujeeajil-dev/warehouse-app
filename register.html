@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Агуулах.мн — Бүртгүүлэх</title>
+<title>Агуулхын Систем — Бүртгүүлэх</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.3/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -52,7 +52,7 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
 <body>
 <div class="box">
   <div class="logo">🏪</div>
-  <h2>Агуулах.мн</h2>
+  <h2>Агуулхын Систем</h2>
   <p class="sub">Дэлгүүрийн агуулахын удирдлагын систем</p>
 
   <!-- STEPS -->
@@ -152,11 +152,17 @@ h2{text-align:center;color:#4f46e5;font-size:22px;margin-bottom:6px;}
     <div class="fr">
       <div class="fg">
         <label>Нууц үг *</label>
-        <input id="password" type="password" placeholder="••••••••">
+        <div style="position:relative;">
+          <input id="password" type="password" placeholder="••••••••" style="padding-right:40px;">
+          <button type="button" onclick="togglePw('password',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;">👁️</button>
+        </div>
       </div>
       <div class="fg">
         <label>Нууц үг давтах *</label>
-        <input id="password2" type="password" placeholder="••••••••">
+        <div style="position:relative;">
+          <input id="password2" type="password" placeholder="••••••••" style="padding-right:40px;">
+          <button type="button" onclick="togglePw('password2',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;">👁️</button>
+        </div>
       </div>
     </div>
     <div style="background:#f0fdf4;border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:#166534;">
@@ -222,6 +228,12 @@ function nextStep(step){
   }
 }
 
+function togglePw(id,btn){
+  const inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁️';}
+}
+
 async function submitRegister(){
   const email=document.getElementById('email').value.trim();
   const username=document.getElementById('username').value.trim();
@@ -239,8 +251,7 @@ async function submitRegister(){
   if(existing&&existing.length>0){errEl.textContent='Нэвтрэх нэр аль хэдийн бүртгэлтэй!';return;}
 
   try{
-    // Save store request
-    await sb.from('store_requests').insert({
+    const{error}=await sb.from('store_requests').insert({
       store_name:document.getElementById('storeName').value.trim(),
       owner_name:document.getElementById('ownerName').value.trim(),
       email,
@@ -252,6 +263,7 @@ async function submitRegister(){
       password:pw,
       status:'pending'
     });
+    if(error){errEl.textContent='Алдаа: '+error.message;return;}
     document.getElementById('sucEmail').textContent=email;
     nextStep(4);
   }catch(e){
